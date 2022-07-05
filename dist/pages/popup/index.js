@@ -499,13 +499,17 @@ function checkDCE() {
 
 const App = () => {
   const [scrollValue, setScrollValue] = react.useState(0);
+  const [clicksValue, setClicksValue] = react.useState(0);
   const dbRef = ref(database);
   get(child(dbRef, 'stats/scroll')).then(snapshot => {
     setScrollValue(snapshot.val().totalLength);
   });
+  get(child(dbRef, 'stats/clicks')).then(snapshot => {
+    setClicksValue(snapshot.val().count);
+  });
   return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
     className: "heading"
-  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m"));
+  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.001 * 0.000239, " kcal by only clicking your mouse!"));
 };
 
 console.log('popup script');

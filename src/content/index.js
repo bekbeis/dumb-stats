@@ -12,22 +12,32 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(); 
+const dbRef = ref(database);
 
 let previousPosition = 0;
 window.addEventListener('scroll', () => {
     const position = window.pageYOffset;
     const scrolled = Math.abs(position - previousPosition) * 0.0002645833;
-    previousPosition = position;
-    let currentLength;
-    const dbRef = ref(database);
+    previousPosition = position;    
     get(child(dbRef, 'stats/scroll')).then((snapshot) => {
-        currentLength = snapshot.val().totalLength;
+        const currentLength = snapshot.val().totalLength;
         const newTotalLength = scrolled + currentLength;
 
         const updates = {};
         updates['/stats/scroll/totalLength'] = newTotalLength;
         update(ref(database), updates);
     });
+});
+
+window.addEventListener('click', () => {
+  get(child(dbRef, 'stats/clicks')).then((snapshot) => {
+    const count = snapshot.val().count;
+    const newCount = count + 1;
+    
+    const updates = {};
+    updates['stats/clicks/count'] = newCount;
+    update(ref(database), updates);
+  });
 });
 
 // (async () => {
