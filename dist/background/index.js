@@ -1,4 +1,4 @@
-import { i as initializeApp, g as getDatabase, s as set, r as ref } from '../chunks/index.esm2017-ad16d4a9.js';
+import { i as initializeApp, g as getDatabase, s as set, r as ref } from '../chunks/index.esm2017-a43c9279.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA9FeuOGTJ9a9rAoyB-HGvqh-Bj2e97BCo",
@@ -27,6 +27,6 @@ chrome.tabs.onUpdated.addListener(tabId => {
     files: ['content/index.js']
   });
 });
-console.log('The abc project is successfully loaded!');
+console.log('The dumb-stats project is successfully loaded!');
 
 export { database as default };

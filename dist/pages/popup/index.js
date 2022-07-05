@@ -1,3 +1,6 @@
+import database from '../../background/index.js';
+import { r as ref, a as get, c as child } from '../../chunks/index.esm2017-a43c9279.js';
+
 function createCommonjsModule(fn) {
   var module = { exports: {} };
 	return fn(module, module.exports), module.exports;
@@ -495,7 +498,12 @@ function checkDCE() {
 });
 
 const App = () => {
-  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("h1", null, "Nothing to display here yet..."));
+  const [scrollValue, setScrollValue] = react.useState(0);
+  const dbRef = ref(database);
+  get(child(dbRef, 'stats/scroll')).then(snapshot => {
+    setScrollValue(snapshot.val().totalLength);
+  });
+  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("h1", null, "You have scrolled ", scrollValue, " meters!"));
 };
 
 console.log('popup script');

@@ -5895,6 +5895,23 @@ function newRelativePath(outerPath, innerPath) {
     }
 }
 /**
+ * @returns -1, 0, 1 if left is less, equal, or greater than the right.
+ */
+function pathCompare(left, right) {
+    const leftKeys = pathSlice(left, 0);
+    const rightKeys = pathSlice(right, 0);
+    for (let i = 0; i < leftKeys.length && i < rightKeys.length; i++) {
+        const cmp = nameCompare(leftKeys[i], rightKeys[i]);
+        if (cmp !== 0) {
+            return cmp;
+        }
+    }
+    if (leftKeys.length === rightKeys.length) {
+        return 0;
+    }
+    return leftKeys.length < rightKeys.length ? -1 : 1;
+}
+/**
  * @returns true if paths are the same.
  */
 function pathEquals(path, other) {
@@ -10858,6 +10875,20 @@ function writeTreeAddOverwrite(writeTree, path, snap, writeId, visible) {
     }
     writeTree.lastWriteId = writeId;
 }
+/**
+ * Record a new merge from user code.
+ */
+function writeTreeAddMerge(writeTree, path, changedChildren, writeId) {
+    assert(writeId > writeTree.lastWriteId, 'Stacking an older merge on top of newer ones');
+    writeTree.allWrites.push({
+        path,
+        children: changedChildren,
+        writeId,
+        visible: true
+    });
+    writeTree.visibleWrites = compoundWriteAddWrites(writeTree.visibleWrites, path, changedChildren);
+    writeTree.lastWriteId = writeId;
+}
 function writeTreeGetWrite(writeTree, writeId) {
     for (let i = 0; i < writeTree.allWrites.length; i++) {
         const record = writeTree.allWrites[i];
@@ -12258,6 +12289,17 @@ function syncTreeApplyUserOverwrite(syncTree, path, newData, writeId, visible) {
     }
 }
 /**
+ * Apply the data from a user-generated update() call
+ *
+ * @returns Events to raise.
+ */
+function syncTreeApplyUserMerge(syncTree, path, changedChildren, writeId) {
+    // Record pending merge.
+    writeTreeAddMerge(syncTree.pendingWriteTree_, path, changedChildren, writeId);
+    const changeTree = ImmutableTree.fromObject(changedChildren);
+    return syncTreeApplyOperationToSyncPoints_(syncTree, new Merge(newOperationSourceUser(), path, changeTree));
+}
+/**
  * Acknowledge a pending user write that was previously registered with applyUserOverwrite() or applyUserMerge().
  *
  * @param revert - True if the given write failed and needs to be reverted
@@ -13134,6 +13176,15 @@ const isValidRootPathString = function (pathString) {
     }
     return isValidPathString(pathString);
 };
+const isValidPriority = function (priority) {
+    return (priority === null ||
+        typeof priority === 'string' ||
+        (typeof priority === 'number' && !isInvalidJSONNumber(priority)) ||
+        (priority &&
+            typeof priority === 'object' &&
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            contains(priority, '.sv')));
+};
 /**
  * Pre-validate a datum passed as an argument to Firebase function.
  */
@@ -13210,6 +13261,73 @@ const validateFirebaseData = function (errorPrefix, data, path_) {
                 ' in addition to actual children.');
         }
     }
+};
+/**
+ * Pre-validate paths passed in the firebase function.
+ */
+const validateFirebaseMergePaths = function (errorPrefix, mergePaths) {
+    let i, curPath;
+    for (i = 0; i < mergePaths.length; i++) {
+        curPath = mergePaths[i];
+        const keys = pathSlice(curPath);
+        for (let j = 0; j < keys.length; j++) {
+            if (keys[j] === '.priority' && j === keys.length - 1) ;
+            else if (!isValidKey(keys[j])) {
+                throw new Error(errorPrefix +
+                    'contains an invalid key (' +
+                    keys[j] +
+                    ') in path ' +
+                    curPath.toString() +
+                    '. Keys must be non-empty strings ' +
+                    'and can\'t contain ".", "#", "$", "/", "[", or "]"');
+            }
+        }
+    }
+    // Check that update keys are not descendants of each other.
+    // We rely on the property that sorting guarantees that ancestors come
+    // right before descendants.
+    mergePaths.sort(pathCompare);
+    let prevPath = null;
+    for (i = 0; i < mergePaths.length; i++) {
+        curPath = mergePaths[i];
+        if (prevPath !== null && pathContains(prevPath, curPath)) {
+            throw new Error(errorPrefix +
+                'contains a path ' +
+                prevPath.toString() +
+                ' that is ancestor of another path ' +
+                curPath.toString());
+        }
+        prevPath = curPath;
+    }
+};
+/**
+ * pre-validate an object passed as an argument to firebase function (
+ * must be an object - e.g. for firebase.update()).
+ */
+const validateFirebaseMergeDataArg = function (fnName, data, path, optional) {
+    if (optional && data === undefined) {
+        return;
+    }
+    const errorPrefix$1 = errorPrefix(fnName, 'values');
+    if (!(data && typeof data === 'object') || Array.isArray(data)) {
+        throw new Error(errorPrefix$1 + ' must be an object containing the children to replace.');
+    }
+    const mergePaths = [];
+    each(data, (key, value) => {
+        const curPath = new Path(key);
+        validateFirebaseData(errorPrefix$1, value, pathChild(path, curPath));
+        if (pathGetBack(curPath) === '.priority') {
+            if (!isValidPriority(value)) {
+                throw new Error(errorPrefix$1 +
+                    "contains an invalid value for '" +
+                    curPath.toString() +
+                    "', which must be a valid " +
+                    'Firebase priority (a string, finite number, server value, or null).');
+            }
+        }
+        mergePaths.push(curPath);
+    });
+    validateFirebaseMergePaths(errorPrefix$1, mergePaths);
 };
 /**
  * @internal
@@ -13642,6 +13760,42 @@ function repoSetWithPriority(repo, path, newVal, newPriority, onComplete) {
     repoRerunTransactions(repo, affectedPath);
     // We queued the events above, so just flush the queue here
     eventQueueRaiseEventsForChangedPath(repo.eventQueue_, affectedPath, []);
+}
+function repoUpdate(repo, path, childrenToMerge, onComplete) {
+    repoLog(repo, 'update', { path: path.toString(), value: childrenToMerge });
+    // Start with our existing data and merge each child into it.
+    let empty = true;
+    const serverValues = repoGenerateServerValues(repo);
+    const changedChildren = {};
+    each(childrenToMerge, (changedKey, changedValue) => {
+        empty = false;
+        changedChildren[changedKey] = resolveDeferredValueTree(pathChild(path, changedKey), nodeFromJSON(changedValue), repo.serverSyncTree_, serverValues);
+    });
+    if (!empty) {
+        const writeId = repoGetNextWriteId(repo);
+        const events = syncTreeApplyUserMerge(repo.serverSyncTree_, path, changedChildren, writeId);
+        eventQueueQueueEvents(repo.eventQueue_, events);
+        repo.server_.merge(path.toString(), childrenToMerge, (status, errorReason) => {
+            const success = status === 'ok';
+            if (!success) {
+                warn('update at ' + path + ' failed: ' + status);
+            }
+            const clearEvents = syncTreeAckUserWrite(repo.serverSyncTree_, writeId, !success);
+            const affectedPath = clearEvents.length > 0 ? repoRerunTransactions(repo, path) : path;
+            eventQueueRaiseEventsForChangedPath(repo.eventQueue_, affectedPath, clearEvents);
+            repoCallOnCompleteCallback(repo, onComplete, status, errorReason);
+        });
+        each(childrenToMerge, (changedPath) => {
+            const affectedPath = repoAbortTransactions(repo, pathChild(path, changedPath));
+            repoRerunTransactions(repo, affectedPath);
+        });
+        // We queued the events above, so just flush the queue here
+        eventQueueRaiseEventsForChangedPath(repo.eventQueue_, path, []);
+    }
+    else {
+        log("update() called with empty data.  Don't do anything.");
+        repoCallOnCompleteCallback(repo, onComplete, 'ok', undefined);
+    }
 }
 /**
  * Applies all of the changes stored up in the onDisconnect_ tree.
@@ -14559,6 +14713,47 @@ function set(ref, value) {
     return deferred.promise;
 }
 /**
+ * Writes multiple values to the Database at once.
+ *
+ * The `values` argument contains multiple property-value pairs that will be
+ * written to the Database together. Each child property can either be a simple
+ * property (for example, "name") or a relative path (for example,
+ * "name/first") from the current location to the data to update.
+ *
+ * As opposed to the `set()` method, `update()` can be use to selectively update
+ * only the referenced properties at the current location (instead of replacing
+ * all the child properties at the current location).
+ *
+ * The effect of the write will be visible immediately, and the corresponding
+ * events ('value', 'child_added', etc.) will be triggered. Synchronization of
+ * the data to the Firebase servers will also be started, and the returned
+ * Promise will resolve when complete. If provided, the `onComplete` callback
+ * will be called asynchronously after synchronization has finished.
+ *
+ * A single `update()` will generate a single "value" event at the location
+ * where the `update()` was performed, regardless of how many children were
+ * modified.
+ *
+ * Note that modifying data with `update()` will cancel any pending
+ * transactions at that location, so extreme care should be taken if mixing
+ * `update()` and `transaction()` to modify the same data.
+ *
+ * Passing `null` to `update()` will remove the data at this location.
+ *
+ * See
+ * {@link https://firebase.googleblog.com/2015/09/introducing-multi-location-updates-and_86.html | Introducing multi-location updates and more}.
+ *
+ * @param ref - The location to write to.
+ * @param values - Object containing multiple values.
+ * @returns Resolves when update on server is complete.
+ */
+function update(ref, values) {
+    validateFirebaseMergeDataArg('update', values, ref._path, false);
+    const deferred = new Deferred();
+    repoUpdate(ref._repo, ref._path, values, deferred.wrapCallback(() => { }));
+    return deferred.promise;
+}
+/**
  * Gets the most up-to-date result for this query.
  *
  * @param query - The query to run.
@@ -14793,4 +14988,4 @@ PersistentConnection.prototype.echo = function (data, onEcho) {
  */
 registerDatabase();
 
-export { get as a, child as c, getDatabase as g, initializeApp as i, ref as r, set as s };
+export { get as a, child as c, getDatabase as g, initializeApp as i, ref as r, set as s, update as u };
