@@ -13,17 +13,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(); 
 
-// let previousPosition = 0;
-// window.addEventListener('scroll', () => {
-//     let currentLength;
-//     const dbRef = ref(database);
-//     get(child(dbRef, 'stats/scroll')).then((snapshot) => {
-//         currentLength = snapshot.val().totalLength;
-//         console.log(currentLength);
-//     });
-//     console.log(typeof(currentLength), currentLength);
-// })
-
 let previousPosition = 0;
 window.addEventListener('scroll', () => {
     const position = window.pageYOffset;
@@ -40,8 +29,6 @@ window.addEventListener('scroll', () => {
         update(ref(database), updates);
     });
 });
-
-console.log("content script");
 
 // (async () => {
 //   let previousPosition = 0;

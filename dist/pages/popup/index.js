@@ -503,7 +503,9 @@ const App = () => {
   get(child(dbRef, 'stats/scroll')).then(snapshot => {
     setScrollValue(snapshot.val().totalLength);
   });
-  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("h1", null, "You have scrolled ", scrollValue, " meters!"));
+  return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
+    className: "heading"
+  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m"));
 };
 
 console.log('popup script');

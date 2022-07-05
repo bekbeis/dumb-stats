@@ -10,17 +10,7 @@ const firebaseConfig = {
   databaseURL: "https://dumb-stats-db-default-rtdb.europe-west1.firebasedatabase.app/"
 };
 initializeApp(firebaseConfig);
-const database = getDatabase(); // let previousPosition = 0;
-// window.addEventListener('scroll', () => {
-//     let currentLength;
-//     const dbRef = ref(database);
-//     get(child(dbRef, 'stats/scroll')).then((snapshot) => {
-//         currentLength = snapshot.val().totalLength;
-//         console.log(currentLength);
-//     });
-//     console.log(typeof(currentLength), currentLength);
-// })
-
+const database = getDatabase();
 let previousPosition = 0;
 window.addEventListener('scroll', () => {
   const position = window.pageYOffset;
@@ -35,8 +25,7 @@ window.addEventListener('scroll', () => {
     updates['/stats/scroll/totalLength'] = newTotalLength;
     update(ref(database), updates);
   });
-});
-console.log("content script"); // (async () => {
+}); // (async () => {
 //   let previousPosition = 0;
 //   window.addEventListener('scroll', () => {
 //       const dbRef = ref(database);

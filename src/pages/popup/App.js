@@ -11,9 +11,12 @@ const App = () => {
 
   return (
     <div>
-      <h1>You have scrolled {scrollValue} meters!</h1>
+      <div className='heading'>
+        <h1>YoUr DuMb StAtS!</h1>
+      </div>
+      <p>Total scroll distance: {Math.round((scrollValue + Number.EPSILON) * 100) / 100} m</p>
     </div>
   )
-}
+};
 
-export default App
+export default App;
