@@ -39,15 +39,3 @@ window.addEventListener('click', () => {
     update(ref(database), updates);
   });
 });
-
-// (async () => {
-//   let previousPosition = 0;
-//   window.addEventListener('scroll', () => {
-      
-//       const dbRef = ref(database);
-//       let currentLength = await get(child(dbRef, 'stats/scroll')).then((snapshot) => {
-//           return snapshot.val().totalLength;
-//       });
-//       console.log(typeof(currentLength), currentLength);
-//   });
-// })();

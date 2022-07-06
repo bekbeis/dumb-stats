@@ -42,5 +42,17 @@
     "rollup-plugin-empty-dir": "^1.0.4",
     "rollup-plugin-zip": "^1.0.1",
     "styled-jsx": "^3.3.2"
-  }
+  },
+  "main": "jest.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bekbeis/dumb-stats.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bekbeis/dumb-stats/issues"
+  },
+  "homepage": "https://github.com/bekbeis/dumb-stats#readme"
 }

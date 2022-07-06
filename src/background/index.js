@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set } from "firebase/database";
+import { get, getDatabase, ref, set, child } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA9FeuOGTJ9a9rAoyB-HGvqh-Bj2e97BCo",
@@ -12,6 +12,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(); 
+const dbRef = ref(database);
 
 chrome.runtime.onInstalled.addListener(() => {
   set(ref(database, 'stats/scroll'), {
@@ -29,6 +30,22 @@ chrome.tabs.onUpdated.addListener((tabId) => {
   });
 });
 
-console.log('The dumb-stats project is successfully loaded!')
+const data = ["", ""];
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+//  Эта фигня вытаскивает значения на момент загрузки страницы
+get(child(dbRef, 'stats')).then((snapshot) => {
+  data[0] = snapshot.val().scroll.totalLength;
+  data[1] = snapshot.val().clicks.count;
+});
+//xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message === 'get-data') {
+    get(child(dbRef, 'stats')).then((snapshot) => {
+      data[0] = snapshot.val().scroll.totalLength;
+      data[1] = snapshot.val().clicks.count;
+    });
+    sendResponse(data);
+  }
+});
 
-export default database;
+console.log('The dumb-stats project is successfully loaded!');

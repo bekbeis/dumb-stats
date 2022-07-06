@@ -1,6 +1,3 @@
-import database from '../../background/index.js';
-import { r as ref, a as get, c as child } from '../../chunks/index.esm2017-a43c9279.js';
-
 function createCommonjsModule(fn) {
   var module = { exports: {} };
 	return fn(module, module.exports), module.exports;
@@ -498,20 +495,17 @@ function checkDCE() {
 });
 
 const App = () => {
-  const [scrollValue, setScrollValue] = react.useState(0);
-  const [clicksValue, setClicksValue] = react.useState(0);
-  const dbRef = ref(database);
-  get(child(dbRef, 'stats/scroll')).then(snapshot => {
-    setScrollValue(snapshot.val().totalLength);
-  });
-  get(child(dbRef, 'stats/clicks')).then(snapshot => {
-    setClicksValue(snapshot.val().count);
+  const [scrollValue, setScrollValue] = react.useState("");
+  const [clicksValue, setClicksValue] = react.useState("");
+  chrome.runtime.sendMessage('get-data', response => {
+    const [tempScroll, tempCount] = response;
+    setScrollValue(tempScroll);
+    setClicksValue(tempCount);
   });
   return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
     className: "heading"
-  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.001 * 0.000239, " kcal by only clicking your mouse!"));
+  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.000000239, " kcal by only clicking your mouse!"));
 };
 
-console.log('popup script');
 const root = document.querySelector('#root');
 reactDom.render( /*#__PURE__*/react.createElement(App, null), root);
