@@ -498,18 +498,21 @@ const App = () => {
   const [scrollValue, setScrollValue] = react.useState(0);
   const [clicksValue, setClicksValue] = react.useState(0);
   const [keyPressValue, setKeyPressValue] = react.useState(0);
-  chrome.storage.local.get(['totalLength'], val => {
+  const [pagesValue, setPagesValue] = react.useState(0);
+  chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], val => {
     setScrollValue(val.totalLength);
-  });
-  chrome.storage.local.get(['clickCount'], val => {
     setClicksValue(val.clickCount);
-  });
-  chrome.storage.local.get(['keyPressCount'], val => {
     setKeyPressValue(val.keyPressCount);
+    setPagesValue(val.pagesCount);
   });
+
+  const roundValue = num => {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+  };
+
   return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
     className: "heading"
-  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.000000239, " kcal by only clicking your mouse!"), /*#__PURE__*/react.createElement("p", null, "Total key presses number: ", keyPressValue, "."));
+  }, /*#__PURE__*/react.createElement("h1", null, "YOUR DUMB STATS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", roundValue(scrollValue), " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks: ", clicksValue, ". You have burned ", (clicksValue * 0.000000239).toExponential(3), " kcal by only clicking your mouse!"), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total key presses: ", keyPressValue, "."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total pages viewed: ", pagesValue, "."));
 };
 
 const root = document.querySelector('#root');

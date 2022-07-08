@@ -27,6 +27,14 @@ const main = () => {
       });
     });
   });
+  window.addEventListener('load', () => {
+    chrome.storage.local.get(['pagesCount'], val => {
+      const newPagesCount = val.pagesCount + 1;
+      chrome.storage.local.set({
+        pagesCount: newPagesCount
+      });
+    });
+  });
 }; // "Clears" user's browser after extension deletion, i.e. deletes previous scripts
 
 

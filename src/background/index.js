@@ -1,5 +1,5 @@
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.storage.local.set({totalLength: 0, clickCount: 0, keyPressCount: 0});
+  chrome.storage.local.set({totalLength: 0, clickCount: 0, keyPressCount: 0, pagesCount: 0});
 });
 
 // Executes ContentScript on all tabs (including already open ones)

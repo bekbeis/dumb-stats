@@ -5,29 +5,36 @@ const App = () => {
   const [scrollValue, setScrollValue] = useState(0);
   const [clicksValue, setClicksValue] = useState(0);
   const [keyPressValue, setKeyPressValue] = useState(0);
+  const [pagesValue, setPagesValue] = useState(0);
   
-  chrome.storage.local.get(['totalLength'], (val) => {
+  chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], (val) => {
     setScrollValue(val.totalLength);
-  });
-  chrome.storage.local.get(['clickCount'], (val) => {
     setClicksValue(val.clickCount);
-  });
-  chrome.storage.local.get(['keyPressCount'], (val) => {
     setKeyPressValue(val.keyPressCount);
-  })
+    setPagesValue(val.pagesCount);
+  });
+
+  const roundValue = (num) => {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+  };
 
   return (
     <div>
       <div className='heading'>
-        <h1>YoUr DuMb StAtS!</h1>
+        <h1>YOUR DUMB STATS!</h1>
       </div>
-      <p>Total scroll distance: {Math.round((scrollValue + Number.EPSILON) * 100) / 100} m.</p>
+      <p>Total scroll distance: {roundValue(scrollValue)} m.</p>
       <br />
       <p>
-        Total clicks number: {clicksValue}. You have burned {clicksValue * 0.000000239} kcal by only clicking your mouse!
+        Total clicks: {clicksValue}. You have burned {(clicksValue * 0.000000239).toExponential(3)} kcal by only clicking your mouse!
       </p>
+      <br />
       <p>
-        Total key presses number: {keyPressValue}.
+        Total key presses: {keyPressValue}.
+      </p>
+      <br />
+      <p>
+        Total pages viewed: {pagesValue}.
       </p>
     </div>
   )
