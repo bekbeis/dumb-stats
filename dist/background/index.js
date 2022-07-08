@@ -1,48 +1,30 @@
-import { i as initializeApp, g as getDatabase, r as ref, s as set, a as get, c as child } from '../chunks/index.esm2017-a43c9279.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA9FeuOGTJ9a9rAoyB-HGvqh-Bj2e97BCo",
-  authDomain: "dumb-stats-db.firebaseapp.com",
-  projectId: "dumb-stats-db",
-  storageBucket: "dumb-stats-db.appspot.com",
-  messagingSenderId: "782843106344",
-  appId: "1:782843106344:web:4e66d7f340320e16b6d11d",
-  databaseURL: "https://dumb-stats-db-default-rtdb.europe-west1.firebasedatabase.app/"
-};
-initializeApp(firebaseConfig);
-const database = getDatabase();
-const dbRef = ref(database);
 chrome.runtime.onInstalled.addListener(() => {
-  set(ref(database, 'stats/scroll'), {
-    totalLength: 0
+  chrome.storage.local.set({
+    totalLength: 0,
+    clickCount: 0,
+    keyPressCount: 0
   });
-  set(ref(database, 'stats/clicks'), {
-    count: 0
-  });
-});
-chrome.tabs.onUpdated.addListener(tabId => {
-  chrome.scripting.executeScript({
-    target: {
-      tabId
-    },
-    files: ['content/index.js']
-  });
-});
-const data = ["", ""]; //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//  Эта фигня вытаскивает значения на момент загрузки страницы
+}); // Executes ContentScript on all tabs (including already open ones)
 
-get(child(dbRef, 'stats')).then(snapshot => {
-  data[0] = snapshot.val().scroll.totalLength;
-  data[1] = snapshot.val().clicks.count;
-}); //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message === 'get-data') {
-    get(child(dbRef, 'stats')).then(snapshot => {
-      data[0] = snapshot.val().scroll.totalLength;
-      data[1] = snapshot.val().clicks.count;
-    });
-    sendResponse(data);
+chrome.runtime.onInstalled.addListener(async () => {
+  for (const contentScript of chrome.runtime.getManifest().content_scripts) {
+    for (const tab of await chrome.tabs.query({
+      url: contentScript.matches
+    })) {
+      chrome.scripting.executeScript({
+        target: {
+          tabId: tab.id
+        },
+        files: contentScript.js
+      });
+    }
   }
-});
+}); // Executes ContentScript only on Updated/newly loaded tabs
+// chrome.tabs.onUpdated.addListener((tabId) => {
+//   chrome.scripting.executeScript({
+//     target: {tabId},
+//     files: ['content/index.js']
+//   });
+// });
+
 console.log('The dumb-stats project is successfully loaded!');

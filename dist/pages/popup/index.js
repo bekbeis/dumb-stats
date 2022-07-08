@@ -495,16 +495,21 @@ function checkDCE() {
 });
 
 const App = () => {
-  const [scrollValue, setScrollValue] = react.useState("");
-  const [clicksValue, setClicksValue] = react.useState("");
-  chrome.runtime.sendMessage('get-data', response => {
-    const [tempScroll, tempCount] = response;
-    setScrollValue(tempScroll);
-    setClicksValue(tempCount);
+  const [scrollValue, setScrollValue] = react.useState(0);
+  const [clicksValue, setClicksValue] = react.useState(0);
+  const [keyPressValue, setKeyPressValue] = react.useState(0);
+  chrome.storage.local.get(['totalLength'], val => {
+    setScrollValue(val.totalLength);
+  });
+  chrome.storage.local.get(['clickCount'], val => {
+    setClicksValue(val.clickCount);
+  });
+  chrome.storage.local.get(['keyPressCount'], val => {
+    setKeyPressValue(val.keyPressCount);
   });
   return /*#__PURE__*/react.createElement("div", null, /*#__PURE__*/react.createElement("div", {
     className: "heading"
-  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.000000239, " kcal by only clicking your mouse!"));
+  }, /*#__PURE__*/react.createElement("h1", null, "YoUr DuMb StAtS!")), /*#__PURE__*/react.createElement("p", null, "Total scroll distance: ", Math.round((scrollValue + Number.EPSILON) * 100) / 100, " m."), /*#__PURE__*/react.createElement("br", null), /*#__PURE__*/react.createElement("p", null, "Total clicks number: ", clicksValue, ". You have burned ", clicksValue * 0.000000239, " kcal by only clicking your mouse!"), /*#__PURE__*/react.createElement("p", null, "Total key presses number: ", keyPressValue, "."));
 };
 
 const root = document.querySelector('#root');

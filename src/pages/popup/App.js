@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 
 const App = () => {
 
-  const [scrollValue, setScrollValue] = useState("");
-  const [clicksValue, setClicksValue] = useState("");
+  const [scrollValue, setScrollValue] = useState(0);
+  const [clicksValue, setClicksValue] = useState(0);
+  const [keyPressValue, setKeyPressValue] = useState(0);
   
-  chrome.runtime.sendMessage('get-data', (response) => {
-    const [tempScroll, tempCount] = response;
-    setScrollValue(tempScroll);
-    setClicksValue(tempCount);
+  chrome.storage.local.get(['totalLength'], (val) => {
+    setScrollValue(val.totalLength);
   });
+  chrome.storage.local.get(['clickCount'], (val) => {
+    setClicksValue(val.clickCount);
+  });
+  chrome.storage.local.get(['keyPressCount'], (val) => {
+    setKeyPressValue(val.keyPressCount);
+  })
 
   return (
     <div>
@@ -20,6 +25,9 @@ const App = () => {
       <br />
       <p>
         Total clicks number: {clicksValue}. You have burned {clicksValue * 0.000000239} kcal by only clicking your mouse!
+      </p>
+      <p>
+        Total key presses number: {keyPressValue}.
       </p>
     </div>
   )
