@@ -1,25 +1,111 @@
 <!DOCTYPE html><html lang="en"><head>
     <title>Dumb Stats Popup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&amp;display=swap" rel="stylesheet">
     <style>
-        body {
-            height: 260px;
-            width: 340px;
-            display: flex;
-            font-weight: bold;
-        }
-        .heading {
-            width: 340px;
-            display: flex;
-            justify-content: center;
-        }
-        h1 {
-            margin: 8px;
-            color: yellowgreen;
-        }
-        p {
-            margin: 4px;
-            font-size: 12pt;
-        }
+    body {
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+    }
+    .main {
+        background-color: #FFFFFF;
+        height: 408px;
+        width: 440px;
+    }
+    .header-container {
+        height: 62px;
+        width: 440px;
+    }
+    #logo {
+        position: absolute;
+        left: 20px;
+        top: 20px;
+
+        width: 152.87px;
+        height: 32px;
+    }
+    button {
+        position: absolute;
+        left: 350px;
+        top: 20px;
+
+        width: 70px;
+        height: 32px;
+        border: 0px;
+        color: #FFFFFF;
+        background-color: #080708;
+        border-radius: 7px;
+        font-size: 20px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+    button:hover {
+        background-color: #3772FF;
+    }
+    .item-container {
+        width: 440px;
+        height: 84px;
+    }
+    .item {
+        position: relative;
+        left: 20px;
+        top:10px;
+
+        width: 400px;
+        height: 64px;
+        background-color: #F2F2F7;
+        border-radius: 7px;
+        display: flex;
+    }
+    .item:hover {
+        background-color: #e6efff;
+    }
+    #icon {
+        position: absolute;
+        left: 12px;
+        top: 13px;
+
+        width: 38px;
+        height: 38px;
+    }
+    .name {
+        position: absolute;
+        left: 62px;
+        top: 10px;
+        margin: 0;
+        padding: 0;
+
+        color: #080708;
+        font-size: 16px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+    .val {
+        position: absolute;
+        right: 12px;
+        top: 10px;
+        margin: 0;
+        padding: 0;
+
+        color: #3772FF;
+        font-size: 16px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+    }
+    .description {
+        position: absolute;
+        left: 62px;
+        top: 36px;
+        margin: 0;
+        padding: 0;
+
+        color: #080708;
+        font-size: 12px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 400;
+    }
     </style>
 </head>
 <body>
