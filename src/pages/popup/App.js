@@ -11,31 +11,50 @@ const App = () => {
   const [keyPressValue, setKeyPressValue] = useState(0);
   const [pagesValue, setPagesValue] = useState(0);
 
-  chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], (val) => {
-    setScrollValue(val.totalLength);
-    setClicksValue(val.clickCount);
-    setKeyPressValue(val.keyPressCount);
-    setPagesValue(val.pagesCount);
-  });
+  const roundNum = (val) => ( Math.round((val + Number.EPSILON) * 100) / 100 );
+
+  const formatNum = (val) => (
+    ((val < 1) && (val.toString().length <= 9)) || ((val >= 1) && (val.toString().length <= 13))
+    ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    : val.toExponential(3)
+  );
+
+  const getData = () => {
+    chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], (val) => {
+        setScrollValue(roundNum(val.totalLength));
+        setClicksValue(val.clickCount);
+        setKeyPressValue(val.keyPressCount);
+        setPagesValue(val.pagesCount);
+      });
+  };
+
+  getData();
 
   const resetStats = () => {
     chrome.storage.local.set({totalLength: 0, clickCount: 0, keyPressCount: 0, pagesCount: 0});
-    chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], (val) => {
-      setScrollValue(val.totalLength);
-      setClicksValue(val.clickCount);
-      setKeyPressValue(val.keyPressCount);
-      setPagesValue(val.pagesCount);
-    });
+    getData();
   };
 
-  const roundValue = (num) => {
-    return Math.round((num + Number.EPSILON) * 100) / 100;
-  };
+  const getKcal = (val) => ( `kcal burned by these clicks: ${formatNum(val * 0.000000239)}` );
 
-  const getKcal = (num) => {
-    return (num * 0.000000239).toExponential(3);
-  }
-  
+  const getDistance = (val) => (
+    (val < 384400000) ? `meters to the Moon: ${formatNum(384400000 - val)}`
+    : (val >= 384400000 && val < 384400050) ? `you've reached the Moon!`
+    : (val > 384400050 && val < 149597870700) ? `meters to the Sun: ${formatNum(149597870700 - val)}`
+    : (val >= 149597870700 && val < 149597870750) ? `you've reached the Sun!`
+    : (val > 149597870750 && val < 149597871000) ? `bro, you are going to infinity...`
+    : `you've reached the end.`
+  );
+
+  const getWikiStat = (val) => (
+    (val > 56387981) ?`you've viewed more pages than Wikipedia has`
+    : `wiki has ${formatNum(56387981 - val)} more pages`
+  );
+
+  const getLoremIpsum = (val) => (
+    `lorem ipsum texts you've typed: ${formatNum(roundNum(val / 2557))}`
+  );
+
   return (
     <div className='main'>
       <div className='header-container'>
@@ -55,10 +74,10 @@ const App = () => {
                     clicks
                 </h1>
                 <h1 className='val'>
-                    {clicksValue}
+                    {formatNum(clicksValue)}
                 </h1>
                 <p className='description'>
-                    {`kcal burned by these clicks: ${getKcal(clicksValue)}`}
+                    {getKcal(clicksValue)}
                 </p>
             </div>
         </div>
@@ -71,10 +90,10 @@ const App = () => {
                     scroll distance
                 </h1>
                 <h1 className='val'>
-                    {roundValue(scrollValue)}
+                    {formatNum(scrollValue)}
                 </h1>
                 <p className='description'>
-                    The value is in meters
+                    {getDistance(scrollValue)}
                 </p>
             </div>
         </div>
@@ -84,13 +103,13 @@ const App = () => {
                     <KeyPressIcon />
                 </div>
                 <h1 className='name'>
-                    key presses
+                    keystrokes
                 </h1>
                 <h1 className='val'>
-                    {keyPressValue}
+                    {formatNum(keyPressValue)}
                 </h1>
                 <p className='description'>
-                    Еще не придумал
+                    {getLoremIpsum(keyPressValue)}
                 </p>
             </div>
         </div>
@@ -103,10 +122,10 @@ const App = () => {
                     pages viewed
                 </h1>
                 <h1 className='val'>
-                    {pagesValue}
+                    {formatNum(pagesValue)}
                 </h1>
                 <p className='description'>
-                    Еще не придумал x2
+                    {getWikiStat(pagesValue)}
                 </p>
             </div>
         </div>
