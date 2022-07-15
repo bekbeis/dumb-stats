@@ -644,17 +644,6 @@ const App = () => {
 
   const getLoremIpsum = val => `lorem ipsum texts you've typed: ${formatNum(roundNum(val / 2557))}`;
 
-  const debugging = () => {
-    console.log(formatNum(0.12345)); // +commas
-
-    console.log(formatNum(0.123456789)); // exp
-
-    console.log(formatNum(12345678.9)); // +commas
-
-    console.log(formatNum(123456789123.92)); // exp
-  };
-
-  debugging();
   return /*#__PURE__*/react.createElement("div", {
     className: "main"
   }, /*#__PURE__*/react.createElement("div", {
