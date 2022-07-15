@@ -14,8 +14,8 @@ const App = () => {
   const roundNum = (val) => ( Math.round((val + Number.EPSILON) * 100) / 100 );
 
   const formatNum = (val) => (
-    ((val < 1) && (val.toString().length <= 9)) || ((val >= 1) && (val.toString().length <= 13))
-    ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    ((val < 1) && (val.toString().length <= 9)) ? val
+    : ((val >= 1) && (val.toString().length <= 13)) ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     : val.toExponential(3)
   );
 

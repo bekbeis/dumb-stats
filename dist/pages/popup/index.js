@@ -613,7 +613,7 @@ const App = () => {
 
   const roundNum = val => Math.round((val + Number.EPSILON) * 100) / 100;
 
-  const formatNum = val => val < 1 && val.toString().length <= 9 || val >= 1 && val.toString().length <= 13 ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : val.toExponential(3);
+  const formatNum = val => val < 1 && val.toString().length <= 9 ? val : val >= 1 && val.toString().length <= 13 ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : val.toExponential(3);
 
   const getData = () => {
     chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], val => {
@@ -644,6 +644,17 @@ const App = () => {
 
   const getLoremIpsum = val => `lorem ipsum texts you've typed: ${formatNum(roundNum(val / 2557))}`;
 
+  const debugging = () => {
+    console.log(formatNum(0.12345)); // +commas
+
+    console.log(formatNum(0.123456789)); // exp
+
+    console.log(formatNum(12345678.9)); // +commas
+
+    console.log(formatNum(123456789123.92)); // exp
+  };
+
+  debugging();
   return /*#__PURE__*/react.createElement("div", {
     className: "main"
   }, /*#__PURE__*/react.createElement("div", {
