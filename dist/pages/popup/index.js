@@ -636,13 +636,13 @@ const App = () => {
     getData();
   };
 
-  const getKcal = val => `kcal burned by these clicks: ${formatNum(val * 0.000000239)}`;
+  const getKcal = val => `you have burned ${formatNum(val * 0.000000239)} calories in total by these clicks`;
 
-  const getDistance = val => val < 384400000 ? `meters to the Moon: ${formatNum(384400000 - val)}` : val >= 384400000 && val < 384400050 ? `you've reached the Moon!` : val > 384400050 && val < 149597870700 ? `meters to the Sun: ${formatNum(149597870700 - val)}` : val >= 149597870700 && val < 149597870750 ? `you've reached the Sun!` : val > 149597870750 && val < 149597871000 ? `bro, you are going to infinity...` : `you've reached the end.`;
+  const getDistance = val => val < 384400000 ? `you have ${formatNum(384400000 - val)} meters more to reach the Moon` : val >= 384400000 && val < 384400010 ? `you are incredible! you have reached the Moon!` : val > 384400010 && val < 149597870700 ? `you have ${formatNum(149597870700 - val)} meters more to reach the Sun` : val >= 149597870700 && val < 149597870710 ? `you are even more incredible! you have reached the Sun!` : val > 149597870710 && val < 149597870720 ? `bro, you are going to infinity...` : `you have reached the end`;
 
-  const getWikiStat = val => val > 56387981 ? `you've viewed more pages than Wikipedia has` : `wiki has ${formatNum(56387981 - val)} more pages`;
+  const getWikiStat = val => val > 56387981 ? `you've viewed more pages than Wikipedia has` : `wiki has ${formatNum(56387981 - val)} more pages than you have seen so far`;
 
-  const getLoremIpsum = val => `lorem ipsum texts you've typed: ${formatNum(roundNum(val / 2557))}`;
+  const getLoremIpsum = val => `you could have typed ${formatNum(roundNum(val / 2557))} lorem ipsum texts with this number of keystrokes`;
 
   return /*#__PURE__*/react.createElement("div", {
     className: "main"
