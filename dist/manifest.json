@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Dumb Stats",
-  "version": "2.0",
+  "version": "1.0",
   "description": "Get your dumb statistics!",
   "permissions": [
     "tabs",
