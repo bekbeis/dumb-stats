@@ -610,6 +610,14 @@ const App = () => {
   const [clicksValue, setClicksValue] = react.useState(0);
   const [keyPressValue, setKeyPressValue] = react.useState(0);
   const [pagesValue, setPagesValue] = react.useState(0);
+  react.useEffect(() => {
+    const interval = setInterval(() => {
+      chrome.storage.local.get(['totalLength'], val => {
+        setScrollValue(roundNum(val.totalLength));
+      });
+    }, 200);
+    return () => clearInterval(interval);
+  }, []);
 
   const roundNum = val => Math.round((val + Number.EPSILON) * 100) / 100;
 

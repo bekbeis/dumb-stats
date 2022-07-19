@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from './svgr/ds'
 import ClicksIcon from './svgr/click';
 import ScrollIcon from './svgr/scroll';
@@ -10,6 +10,15 @@ const App = () => {
   const [clicksValue, setClicksValue] = useState(0);
   const [keyPressValue, setKeyPressValue] = useState(0);
   const [pagesValue, setPagesValue] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        chrome.storage.local.get(['totalLength'], (val) => {
+            setScrollValue(roundNum(val.totalLength));
+        });
+    }, 200);
+    return () => clearInterval(interval);
+  }, [])
 
   const roundNum = (val) => ( Math.round((val + Number.EPSILON) * 100) / 100 );
 
@@ -25,7 +34,7 @@ const App = () => {
         setClicksValue(val.clickCount);
         setKeyPressValue(val.keyPressCount);
         setPagesValue(val.pagesCount);
-      });
+    });
   };
 
   getData();
