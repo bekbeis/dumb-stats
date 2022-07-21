@@ -615,7 +615,7 @@ const App = () => {
       chrome.storage.local.get(['totalLength'], val => {
         setScrollValue(roundNum(val.totalLength));
       });
-    }, 200);
+    }, 350);
     return () => clearInterval(interval);
   }, []);
 

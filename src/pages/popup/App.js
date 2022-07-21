@@ -16,9 +16,9 @@ const App = () => {
         chrome.storage.local.get(['totalLength'], (val) => {
             setScrollValue(roundNum(val.totalLength));
         });
-    }, 200);
+    }, 350);
     return () => clearInterval(interval);
-  }, [])
+  }, []);
 
   const roundNum = (val) => ( Math.round((val + Number.EPSILON) * 100) / 100 );
 
