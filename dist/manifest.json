@@ -26,27 +26,6 @@
     "32": "/assets/icons/32.png",
     "128": "/assets/icons/128.png"
   },
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "background/index.js"
-      ],
-      "matches": [
-        "https://*/*",
-        "http://*/*"
-      ]
-    },
-    {
-      "resources": [
-        "chunks/*-*.js",
-        "content/index.js"
-      ],
-      "matches": [
-        "https://*/*",
-        "http://*/*"
-      ]
-    }
-  ],
   "host_permissions": [
     "https://*/*",
     "http://*/*"
@@ -55,6 +34,18 @@
     {
       "js": [
         "content/import-index.js"
+      ],
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "chunks/*-*.js",
+        "content/index.js"
       ],
       "matches": [
         "https://*/*",

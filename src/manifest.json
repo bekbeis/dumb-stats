@@ -21,12 +21,6 @@
     "32": "/assets/icons/32.png",
     "128": "/assets/icons/128.png"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["background/index.js"],
-      "matches": ["https://*/*", "http://*/*"]
-    }
-  ],
   "host_permissions": ["https://*/*", "http://*/*"],
   "content_scripts": [
     {
