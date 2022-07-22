@@ -657,7 +657,7 @@ const App = () => {
     getData();
   };
 
-  const getKcal = val => `you have burned ${formatNum(val * 0.000000239)} calories in total by these clicks`;
+  const getKcal = val => `you have burned nearly ${formatNum(val * 0.000000239)} calories in total by these clicks`;
 
   const getDistance = val => val < 384400000 ? `there are ${formatNum(384400000 - val)} more meters to reach the Moon` : val >= 384400000 && val < 384400010 ? `you are incredible! you have reached the Moon!` : val > 384400010 && val < 149597870700 ? `there are ${formatNum(149597870700 - val)} more meters to reach the Sun` : val >= 149597870700 && val < 149597870710 ? `you are even more incredible! you have reached the Sun!` : val > 149597870710 && val < 149597870720 ? `bro, you are going to infinity...` : `you have reached the end`;
 
@@ -666,7 +666,8 @@ const App = () => {
     return !time ? `nothing to display yet :(` : `you have spent approximately ` + time + ` on this`;
   };
 
-  const getLoremIpsum = val => `you could have typed ${formatNum(roundNum(val / 2557))} lorem ipsum texts with this number of keystrokes`;
+  const getNovelCount = val => //727943
+  val < 77710 ? `${77710 - val} more keystrokes and you could have finished typing The Little Prince` : val < 185650 ? `${185650 - val} more keystrokes and you could have finished typing Robinson Crusoe` : val < 632432 ? `${632432 - val} more keystrokes and you could have finished typing The Odyssey by Homer` : val < 994477 ? `${994477 - val} more keystrokes and you could have finished typing Crime and Punishment` : val < 1623333 ? `${1623333 - val} more keystrokes and you could have finished typing Don Quixote` : val < 2709358 ? `${2709358 - val} more keystrokes and you could have finished typing The Lord of the Rings` : val < 5095599 ? `${5095599 - val} more keystrokes and you could have finished typing the whole Harry Potter` : `With this number of keystrokes, you could have finished typing ${Math.floor(val / 727943)} Harry Potter books`;
 
   return /*#__PURE__*/react.createElement("div", {
     className: "main"
@@ -712,7 +713,7 @@ const App = () => {
     className: "val"
   }, formatNum(keyPressValue)), /*#__PURE__*/react.createElement("p", {
     className: "description"
-  }, getLoremIpsum(keyPressValue)))), /*#__PURE__*/react.createElement("div", {
+  }, getNovelCount(keyPressValue)))), /*#__PURE__*/react.createElement("div", {
     className: "item-container"
   }, /*#__PURE__*/react.createElement("div", {
     className: "item"

@@ -57,7 +57,7 @@ const App = () => {
     getData();
   };
 
-  const getKcal = (val) => ( `you have burned ${formatNum(val * 0.000000239)} calories in total by these clicks` );
+  const getKcal = (val) => ( `you have burned nearly ${formatNum(val * 0.000000239)} calories in total by these clicks` );
 
   const getDistance = (val) => (
     (val < 384400000) ? `there are ${formatNum(384400000 - val)} more meters to reach the Moon`
@@ -74,8 +74,15 @@ const App = () => {
     : `you have spent approximately ` + time + ` on this`;
   };
 
-  const getLoremIpsum = (val) => (
-    `you could have typed ${formatNum(roundNum(val / 2557))} lorem ipsum texts with this number of keystrokes`
+  const getNovelCount = (val) => (//727943
+    (val < 77710) ? `${77710 - val} more keystrokes and you could have finished typing The Little Prince`
+    : (val < 185650) ? `${185650 - val} more keystrokes and you could have finished typing Robinson Crusoe`
+    : (val < 632432) ? `${632432 - val} more keystrokes and you could have finished typing The Odyssey by Homer`
+    : (val < 994477) ? `${994477 - val} more keystrokes and you could have finished typing Crime and Punishment`
+    : (val < 1623333) ? `${1623333 - val} more keystrokes and you could have finished typing Don Quixote`
+    : (val < 2709358) ? `${2709358 - val} more keystrokes and you could have finished typing The Lord of the Rings`
+    : (val < 5095599) ? `${5095599 - val} more keystrokes and you could have finished typing the whole Harry Potter`
+    : `With this number of keystrokes, you could have finished typing ${Math.floor(val / 727943)} Harry Potter books`
   );
 
   return (
@@ -132,7 +139,7 @@ const App = () => {
                     {formatNum(keyPressValue)}
                 </h1>
                 <p className='description'>
-                    {getLoremIpsum(keyPressValue)}
+                    {getNovelCount(keyPressValue)}
                 </p>
             </div>
         </div>
