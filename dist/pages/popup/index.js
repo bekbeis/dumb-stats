@@ -623,6 +623,19 @@ const App = () => {
 
   const formatNum = val => val < 1 && val.toString().length <= 9 ? val : val >= 1 && val.toString().length <= 13 ? val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : val.toExponential(3);
 
+  const calculateTime = seconds => {
+    seconds = Number(seconds);
+    var d = Math.floor(seconds / (3600 * 24));
+    var h = Math.floor(seconds % (3600 * 24) / 3600);
+    var m = Math.floor(seconds % 3600 / 60);
+    var s = Math.floor(seconds % 60);
+    var dDisplay = d > 0 ? d + (d == 1 ? " day, " : " days, ") : "";
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    return dDisplay + hDisplay + mDisplay + sDisplay;
+  };
+
   const getData = () => {
     chrome.storage.local.get(['totalLength', 'clickCount', 'keyPressCount', 'pagesCount'], val => {
       setScrollValue(roundNum(val.totalLength));
@@ -646,9 +659,12 @@ const App = () => {
 
   const getKcal = val => `you have burned ${formatNum(val * 0.000000239)} calories in total by these clicks`;
 
-  const getDistance = val => val < 384400000 ? `you have ${formatNum(384400000 - val)} meters more to reach the Moon` : val >= 384400000 && val < 384400010 ? `you are incredible! you have reached the Moon!` : val > 384400010 && val < 149597870700 ? `you have ${formatNum(149597870700 - val)} meters more to reach the Sun` : val >= 149597870700 && val < 149597870710 ? `you are even more incredible! you have reached the Sun!` : val > 149597870710 && val < 149597870720 ? `bro, you are going to infinity...` : `you have reached the end`;
+  const getDistance = val => val < 384400000 ? `there are ${formatNum(384400000 - val)} more meters to reach the Moon` : val >= 384400000 && val < 384400010 ? `you are incredible! you have reached the Moon!` : val > 384400010 && val < 149597870700 ? `there are ${formatNum(149597870700 - val)} more meters to reach the Sun` : val >= 149597870700 && val < 149597870710 ? `you are even more incredible! you have reached the Sun!` : val > 149597870710 && val < 149597870720 ? `bro, you are going to infinity...` : `you have reached the end`;
 
-  const getWikiStat = val => val > 56387981 ? `you've viewed more pages than Wikipedia has` : `wiki has ${formatNum(56387981 - val)} more pages than you have seen so far`;
+  const getCalculatedTime = val => {
+    const time = calculateTime(54 * val);
+    return !time ? `nothing to display yet :(` : `you have spent approximately ` + time + ` on this`;
+  };
 
   const getLoremIpsum = val => `you could have typed ${formatNum(roundNum(val / 2557))} lorem ipsum texts with this number of keystrokes`;
 
@@ -708,7 +724,7 @@ const App = () => {
     className: "val"
   }, formatNum(pagesValue)), /*#__PURE__*/react.createElement("p", {
     className: "description"
-  }, getWikiStat(pagesValue)))));
+  }, getCalculatedTime(pagesValue)))));
 };
 
 const root = document.querySelector('#root');
