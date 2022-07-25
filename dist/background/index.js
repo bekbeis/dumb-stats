@@ -10,6 +10,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     for (const tab of await chrome.tabs.query({
       url: contentScript.matches
     })) {
+      if (tab.url.includes("webstore")) continue;
       chrome.scripting.executeScript({
         target: {
           tabId: tab.id
