@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Dumb Stats",
   "version": "1.0",
-  "description": "Get your dumb statistics!",
+  "description": "Monitor fun statistics about your web activity with Dumb Stats.",
   "permissions": [
     "tabs",
     "scripting",

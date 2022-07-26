@@ -1,6 +1,6 @@
 {
   "name": "Dumb Stats",
-  "description": "Get your dumb statistics!",
+  "description": "Monitor fun statistics about your web activity with Dumb Stats.",
   "version": "1.0",
   "manifest_version": 3,
   "permissions": ["tabs", "scripting", "storage"],
