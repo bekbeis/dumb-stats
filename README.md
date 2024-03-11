@@ -16,4 +16,4 @@ Dumb Stats tracks user actions such as clicking, scrolling, typing, and opening 
 If you want to try out Dumb Stats, you can <a href="https://chrome.google.com/webstore/detail/dumb-stats/daifepjkmeaghpkmnljbmkpacimoagam" target="_blank">install</a> it directly from Chrome Web Store.
 
 ## Any feedback or suggestions?
-Feel free to contact me via <a href="https://t.me/beph64" target="_blank">Telegram</a> or <a href="mailto:bekzat.beis@gmail.com" target="_blank">Gmail</a> for any kind of discussion.
+Feel free to contact me via <a href="mailto:bekzat.beis@gmail.com" target="_blank">Gmail</a> for any kind of discussion.
